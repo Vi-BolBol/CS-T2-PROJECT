@@ -197,8 +197,7 @@ public class Inventory {
                 int stock = stockLevels.get(i);
                 String stockStatus = stock == 0 ? "OUT OF STOCK" : 
                                    (stock < 10 ? "LOW STOCK" : "In Stock");
-                System.out.println(String.format("%s | Stock: %d (%s)", 
-                    food.getDisplayInfo(), stock, stockStatus));
+                System.out.println(food.toString() +  stock +  stockStatus);
             }
         }
         System.out.println("Total Items: " + getTotalItems());
