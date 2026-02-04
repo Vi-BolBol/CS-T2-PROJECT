@@ -69,9 +69,10 @@ public class Food {
         this.available = available;
     }
 
-    public String getDisplayInfo() {
+    public String toString() {
         //print format
         //foodId, name, price, category, available ? "Available" : "Sold Out"
+
         String availability = (available) ? "Available":"Sold Out";
         return foodId + name + price + category + availability;
     }
