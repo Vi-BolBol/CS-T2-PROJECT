@@ -34,6 +34,7 @@ public class Food {
     }
 
     public void setFoodId(String foodId) {
+        //Validate , food must be not null and empty 
         if (foodId == null || foodId.trim().isEmpty()) {
             throw new IllegalArgumentException("Food ID cannot be empty");
         }
@@ -41,6 +42,7 @@ public class Food {
     }
 
     public void setName(String name) {
+        //Validate , food must be not null and empty 
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Food name cannot be empty");
         }
@@ -48,6 +50,7 @@ public class Food {
     }
 
     public void setPrice(double price) {
+        //Validate, price must be > 0
         if (price <= 0) {
             throw new IllegalArgumentException("Price must be greater than 0");
         }
@@ -55,6 +58,7 @@ public class Food {
     }
 
     public void setCategory(String category) {
+        //Validate, Category must be not null and empty 
         if (category == null || category.trim().isEmpty()) {
             throw new IllegalArgumentException("Category cannot be empty");
         }
@@ -66,7 +70,9 @@ public class Food {
     }
 
     public String getDisplayInfo() {
-        return String.format("[%s] %s - $%.2f (%s) - %s", 
-            foodId, name, price, category, available ? "Available" : "Sold Out");
+        //print format
+        //foodId, name, price, category, available ? "Available" : "Sold Out"
+        String availability = (available) ? "Available":"Sold Out";
+        return foodId + name + price + category + availability;
     }
 }
