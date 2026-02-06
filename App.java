@@ -22,15 +22,34 @@ public class App {
         inventory.addFood(butter_chicken, 2);
         inventory.addFood(pho, 2);
         
-        
-
-        Order order1 = new Order("123","Online");
-        order1.addOrder(sushi.foodId, 2, sushi.price);
-        inventory.reduceStock(sushi.foodId,2);
-
         inventory.displayInventory();
 
-        Transaction transaction = new Transaction("123", order1.getOrderId(), order1.getTotalAmount(), "QR");
-        System.out.println(transaction.getTransactionReceipt() + "");
+        inventory.updateStock(pizza.foodId, 10);//set pizza stock to 10
+        inventory.reduceStock(sushi.foodId, 1);// reduce sushi stock by 1
+        inventory.restockItem(burger.foodId, 3);//add or restock burger by 3
+        inventory.removeFood(pho.foodId);//remove food
+
+        Order order1 = new Order("123","Online");
+        System.out.println("═══════════════════════════════════════════════════════ ORDER ═══════════════════════════════════════════════════════");
+        order1.addOrder(sushi.foodId, 1, sushi.price);
+        inventory.reduceStock(sushi.foodId, 1);
+
+        order1.addOrder(pizza.foodId, 3, pizza.price);
+        inventory.reduceStock(pizza.foodId, 3);
+        
+        System.out.println(order1.getOrderSummary());
+
+
+        Order order2 = new Order("234", "Table","2345");
+        order2.addOrder(burger.foodId,   1, burger.price);
+        inventory.reduceStock(burger.foodId,1);
+
+        System.out.println(order2.getOrderSummary());
+        
+        Transaction transaction = new Transaction("234", order1.orderId, order1.totalAmount,"QR");
+        System.out.println(transaction.getTransactionReceipt());
+        
+        Transaction transaction1 = new Transaction("214", order2.orderId, order2.totalAmount,"QR");
+        System.out.println(transaction1.getTransactionReceipt());
     }
 }

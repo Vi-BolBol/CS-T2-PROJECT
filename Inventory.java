@@ -79,6 +79,8 @@ public class Inventory {
         return -1;
     }
 
+
+    //set old stock level to new stock level 
     public void updateStock(String foodId, int newStock) {
         if (foodId == null || foodId.trim().isEmpty()) {
             throw new IllegalArgumentException("Food ID cannot be empty");
@@ -103,6 +105,7 @@ public class Inventory {
         }
     }
 
+    //add to stock
     public void restockItem(String foodId, int quantity) {
         if (foodId == null || foodId.trim().isEmpty()) {
             throw new IllegalArgumentException("Food ID cannot be empty");
@@ -126,6 +129,7 @@ public class Inventory {
         }
     }
 
+    //reduce 
     public void reduceStock(String foodId, int quantity) {
         if (foodId == null || foodId.trim().isEmpty()) {
             throw new IllegalArgumentException("Food ID cannot be empty");

@@ -3,89 +3,20 @@ import java.time.format.DateTimeFormatter;
 
 public class Transaction {
 
-    private String transactionId;
-    private String orderId;
-    private double amount;
-    private String paymentMethod;
-    private LocalDateTime transactionDate;
-    private String status;
+    String transactionId;
+    String orderId;
+    double amount;
+    String paymentMethod;
+    LocalDateTime transactionDate;
+    String status;
 
     public Transaction(String transactionId, String orderId, double amount, String paymentMethod) {
-        setTransactionId(transactionId);
-        setOrderId(orderId);
-        setAmount(amount);
-        setPaymentMethod(paymentMethod);
-        this.transactionDate = LocalDateTime.now();
-        setStatus("Completed");
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setTransactionId(String transactionId) {
-        if (transactionId == null || transactionId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Transaction ID cannot be empty");
-        }
         this.transactionId = transactionId;
-    }
-
-    public void setOrderId(String orderId) {
-        if (orderId == null || orderId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Order ID cannot be empty");
-        }
         this.orderId = orderId;
-    }
-
-    public void setAmount(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than 0");
-        }
         this.amount = amount;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
-            throw new IllegalArgumentException("Payment method cannot be empty");
-        }
-        String upperMethod = paymentMethod.toUpperCase();
-        if (!upperMethod.equals("CASH") && !upperMethod.equals("CARD") && 
-            !upperMethod.equals("QR") && !upperMethod.equals("ONLINE")) {
-            throw new IllegalArgumentException("Invalid payment method. Must be: Cash, Card, QR, or Online");
-        }
         this.paymentMethod = paymentMethod;
-    }
-
-    public void setStatus(String status) {
-        if (status == null || status.trim().isEmpty()) {
-            throw new IllegalArgumentException("Status cannot be empty");
-        }
-        String upperStatus = status.toUpperCase();
-        if (!upperStatus.equals("PENDING") && !upperStatus.equals("COMPLETED") && 
-            !upperStatus.equals("FAILED") && !upperStatus.equals("REFUNDED")) {
-            throw new IllegalArgumentException("Invalid status. Must be: Pending, Completed, Failed, or Refunded");
-        }
-        this.status = status;
+        this.transactionDate = LocalDateTime.now();
+        this.status = "completed";
     }
 
     public String getFormattedDate() {
@@ -93,19 +24,16 @@ public class Transaction {
         return transactionDate.format(formatter);
     }
 
-    public boolean isSuccessful() {
-        return status.equalsIgnoreCase("Completed");
-    }
-
     public String getTransactionReceipt() {
-        return String.format("========== RECEIPT ==========\n" +
+        System.out.println("");
+      return String.format("══════════ RECEIPT ══════════\n" +
                            "Transaction ID: %s\n" +
                            "Order ID: %s\n" +
                            "Amount: $%.2f\n" +
                            "Payment Method: %s\n" +
                            "Status: %s\n" +
                            "Date: %s\n" +
-                           "=============================",
+                           "═════════ SUNFLOWER ═════════",
             transactionId, orderId, amount, paymentMethod, status, getFormattedDate());
     }
 }
