@@ -1,13 +1,13 @@
 package model;
 
-public class Menu {
+public class Food {
     String name;
     double price;
     boolean available;
     int Instocks;
     int sold;
 
-    public Menu(String name, double price, boolean available, int Instocks){
+    public Food(String name, double price, boolean available, int Instocks){
         this.name = name;
         this.price = price;
         this.available = available;
