@@ -1,13 +1,15 @@
 package model;
 
 public class Food {
+    int FoodId;
     String name;
     double price;
     boolean available;
     int Instocks;
     int sold;
 
-    public Food(String name, double price, boolean available, int Instocks){
+    public Food(int FoodID, String name, double price, boolean available, int Instocks){
+        this.FoodId = FoodID;
         this.name = name;
         this.price = price;
         this.available = available;
@@ -17,6 +19,6 @@ public class Food {
 
     @Override
     public String toString(){
-        return "Menu: Item {name = '" + name + "', price = " + price + ", available = " + available + ", In stocks = " + Instocks + ", Sold = " + sold;
+        return "Food: name = '" + name + "', ID = " + FoodId + ", price = " + price + ", In stocks = " + Instocks + ", sold = " + sold + ", Avaiable" + (available ? "Available" : "Out of Stock");
     }
 }

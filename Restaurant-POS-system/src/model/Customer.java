@@ -1,11 +1,13 @@
 package model;
 
 public class Customer {
+    int CustomerID;
     String name;
     double balance;
     boolean member;
 
-    public Customer(String name, double balance, boolean member){
+    public Customer(int CustomerID,String name, double balance, boolean member){
+        this.CustomerID = CustomerID;
         this.name = name;
         this.balance = balance;
         this.member = member;
@@ -18,10 +20,5 @@ public class Customer {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public String toString(){
-        return "Customer name: '" + name + "', balance = " + balance + ", member = " + member;
     }
 }
