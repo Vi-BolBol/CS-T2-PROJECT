@@ -31,6 +31,6 @@ public class App {
         inventory.displayInventory();
 
         Transaction transaction = new Transaction("123", order1.getOrderId(), order1.getTotalAmount(), "QR");
-        System.out.println(transaction.getTransactionReceipt());
+        System.out.println(transaction.getTransactionReceipt() + "");
     }
 }
