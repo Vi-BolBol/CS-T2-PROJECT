@@ -2,34 +2,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Inventory {
-    private String inventoryId;
-    private List<Food> foodItems;
-    private List<Integer> stockLevels; 
+    String inventoryId;
+    List<Food> foodItems;
+    List<Integer> stockLevels; 
 
     public Inventory(String inventoryId) {
-        setInventoryId(inventoryId);
+        this.inventoryId = inventoryId;
         this.foodItems = new ArrayList<>();
         this.stockLevels = new ArrayList<>();
-    }
-
-    // Getters
-    public String getInventoryId() {
-        return inventoryId;
-    }
-
-    public List<Food> getFoodItems() {
-        return new ArrayList<>(foodItems); 
-    }
-
-    public List<Integer> getStockLevels() {
-        return new ArrayList<>(stockLevels); 
-    }
-
-    public void setInventoryId(String inventoryId) {
-        if (inventoryId == null || inventoryId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Inventory ID cannot be empty");
-        }
-        this.inventoryId = inventoryId;
     }
 
     public void addFood(Food food, int initialStock) {
@@ -41,8 +21,8 @@ public class Inventory {
         }
 
         for (Food item : foodItems) {
-            if (item.getFoodId().equals(food.getFoodId())) {
-                throw new IllegalArgumentException("Food with ID " + food.getFoodId() + " already exists in inventory");
+            if (item.foodId.equals(food.foodId)) {
+                throw new IllegalArgumentException("Food with ID " + food.foodId + " already exists in inventory");
             }
         }
         
@@ -50,7 +30,7 @@ public class Inventory {
         stockLevels.add(initialStock);
 
         if (initialStock == 0) {
-            food.setAvailable(false);
+            food.available = false;
         }
     }
 
@@ -61,7 +41,7 @@ public class Inventory {
         
         int index = -1;
         for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
+            if (foodItems.get(i).foodId.equals(foodId)) {
                 index = i;
                 break;
             }
@@ -79,11 +59,11 @@ public class Inventory {
         }
         
         for (Food food : foodItems) {
-            if (food.getFoodId().equals(foodId)) {
+            if (food.foodId.equals(foodId)) {
                 return food;
             }
         }
-        return null;
+         return null;
     }
 
     public int getStock(String foodId) {
@@ -92,7 +72,7 @@ public class Inventory {
         }
         
         for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
+            if (foodItems.get(i).foodId.equals(foodId)) {
                 return stockLevels.get(i);
             }
         }
@@ -103,19 +83,20 @@ public class Inventory {
         if (foodId == null || foodId.trim().isEmpty()) {
             throw new IllegalArgumentException("Food ID cannot be empty");
         }
+
         if (newStock < 0) {
             throw new IllegalArgumentException("Stock level cannot be negative");
         }
         
         for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
+            if (foodItems.get(i).foodId.equals(foodId)) {
                 stockLevels.set(i, newStock);
 
                 Food food = foodItems.get(i);
                 if (newStock == 0) {
-                    food.setAvailable(false);
+                    food.available = false;
                 } else {
-                    food.setAvailable(true);
+                    food.available = true;
                 }
                 return;
             }
@@ -131,14 +112,14 @@ public class Inventory {
         }
         
         for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
+            if (foodItems.get(i).foodId.equals(foodId)) {
                 int currentStock = stockLevels.get(i);
                 int newStock = currentStock + quantity;
                 stockLevels.set(i, newStock);
 
                 Food food = foodItems.get(i);
-                if (!food.isAvailable() && newStock > 0) {
-                    food.setAvailable(true);
+                if (!food.available && newStock > 0) {
+                    food.available = true;
                 }
                 return;
             }
@@ -154,7 +135,7 @@ public class Inventory {
         }
         
         for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
+            if (foodItems.get(i).foodId.equals(foodId)) {
                 int currentStock = stockLevels.get(i);
                 
                 if (currentStock < quantity) {
@@ -166,7 +147,7 @@ public class Inventory {
 
                 Food food = foodItems.get(i);
                 if (newStock == 0) {
-                    food.setAvailable(false);
+                    food.available = false;
                 }
                 return;
             }
@@ -187,20 +168,38 @@ public class Inventory {
         return count;
     }
 
-    public void displayInventory() {
-        System.out.println("===== INVENTORY REPORT =====");
+    public void displayInventory(){
+        System.out.println("═══════════════════════ INVENTORY REPORT ═══════════════════════");
+        System.out.println();
+
         if (foodItems.isEmpty()) {
-            System.out.println("No items in inventory");
-        } else {
-            for (int i = 0; i < foodItems.size(); i++) {
-                Food food = foodItems.get(i);
-                int stock = stockLevels.get(i);
-                String stockStatus = stock == 0 ? "OUT OF STOCK" : 
-                                   (stock < 10 ? "LOW STOCK" : "In Stock");
-                System.out.println(food.toString() +  stock +  stockStatus);
-            }
+            System.out.println("                  No items in inventory");
+            System.out.println();
+            return;
         }
-        System.out.println("Total Items: " + getTotalItems());
-        System.out.println("Low Stock Items (< 10): " + getLowStockCount(10));
+
+        System.out.println(" ID   Name                 Category     Price    Stock   Status");
+        System.out.println("──────────────────────────────────────────────────────────────");
+
+        for (int i = 0; i < foodItems.size(); i++) {
+            Food food = foodItems.get(i);
+            int stock = stockLevels.get(i);
+
+            String status = stock == 0 ? "OUT OF STOCK" :
+                            stock < 10 ? "LOW STOCK" : "In Stock";
+
+            System.out.printf("%3s  %-20s %-12s $%6.2f   %4d   %s%n",
+                    food.foodId,
+                    food.name,
+                    food.category,
+                    food.price,
+                    stock,
+                    status);
+        }
+
+        System.out.println("──────────────────────────────────────────────────────────────");
+        System.out.printf("  Total items          : %d%n", getTotalItems());
+        System.out.printf("  Low stock items (<10): %d%n", getLowStockCount(10));
+        System.out.println();
     }
 }

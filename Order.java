@@ -6,9 +6,11 @@ import java.util.List;
 public class Order {
     private String orderId;
     private String orderType; 
-    private String tableId;   
+    private String tableId;  
+
     private List<String> foodItems;  
     private List<Integer> quantities; 
+
     private double totalAmount;
     private LocalDateTime orderDate;
     private String status;
@@ -126,7 +128,7 @@ public class Order {
         this.status = status;
     }
 
-    public void addItem(String foodId, int quantity, double price) {
+    public void addOrder(String foodId, int quantity, double price) {
         if (foodId == null || foodId.trim().isEmpty()) {
             throw new IllegalArgumentException("Food ID cannot be empty");
         }
