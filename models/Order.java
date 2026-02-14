@@ -1,19 +1,20 @@
+package models;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
-    String orderId;
-    String orderType; 
-    String tableId;  
+    private String orderId;
+    private String orderType; 
+    private String tableId;  
 
-    List<String> foodItems;  
-    List<Integer> quantities; 
+    private List<String> foodItems;  
+    private List<Integer> quantities; 
 
-    double totalAmount;
-    LocalDateTime orderDate;
-    String status;
+    private double totalAmount;
+    private LocalDateTime orderDate;
+    private String status;
 
     public Order(String orderId, String orderType) {
         this.orderId = orderId;
@@ -77,6 +78,10 @@ public class Order {
         return foodItems.size();
     }
 
+    public double getTotalPrice(){
+        return totalAmount;
+    }
+
     public String getFormattedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return orderDate.format(formatter);
@@ -91,9 +96,7 @@ public class Order {
     }
 
     public String getOrderSummary() {
-        String orderType = isTableOrder() 
-            ? "Table " + tableId 
-            : "Online";
+        String orderType = isTableOrder() ? "Table " + tableId : "Online";
 
         String statusText = switch (status != null ? status.toLowerCase() : "") {
             case "pending"   -> "Pending";

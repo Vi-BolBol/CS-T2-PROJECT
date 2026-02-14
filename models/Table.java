@@ -1,9 +1,10 @@
+package models;
 public class Table {
 
-    String tableId;
-    int capacity;
-    boolean isOccupied;
-    String location;
+    private String tableId;
+    private int capacity;
+    private boolean isOccupied;
+    private String location;
 
     public Table(String tableId, int capacity, boolean isOccupied, String location) {
         this.tableId = tableId;

@@ -1,103 +1,139 @@
-import java.util.Objects;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+import controllers.Controller;
 
 public class App {
+
+    public void takeOrder( Controller controller,Scanner scanner ){
+
+        ArrayList<String> foodId = new ArrayList<>();
+        ArrayList<Integer> quantities = new ArrayList<>();
+
+        boolean isOrdered = false;
+        while(true){
+            controller.displayInventory();
+
+            System.out.println("═══════════════════════ FOOD ID ═══════════════════════");
+            System.out.println("Enter Food id for ordering !:");
+            System.out.println("Q/q for stop & cancel order");
+
+            boolean cartHasItem = controller.getCartSize() > 0;
+
+            if(cartHasItem){
+                System.out.println("O/o for see Ordere!");
+                System.out.println("C/c for Checkout!");
+            }
+
+            String id = scanner.nextLine();
+
+            if(cartHasItem && id.equalsIgnoreCase("O")){
+                controller.displayOrderedCart();
+                continue;
+            }
+
+            if(cartHasItem && id.equalsIgnoreCase("c")){
+                isOrdered = true;
+                break;
+            }
+
+            if(id.equalsIgnoreCase("q")){
+                break;
+            }
+
+            if(id.trim().equals("")){
+                System.out.println(id + "Please enter a Valid ID!");
+                continue;
+            }
+
+
+
+             if(!controller.isIDExist(id) ){ // id validation
+                 System.out.println(id + " Does not exist!");
+                 continue;
+            }
+
+            String quantity = null;
+            while(true){
+                System.out.println("═══════════════════════ Quantity ═══════════════════════");
+                System.out.println("Enter Food quantity: ");
+                quantity = scanner.nextLine();
+
+                if(!quantity.matches("\\d+")){
+                    System.out.println("Please enter a Valid amount!");
+                    continue;
+                }
+
+                break;
+            }
+
+            int Quantity = Integer.parseInt(quantity);
+
+            try{
+                //add to cart to update stock level
+                controller.addToCart(id,Quantity);
+
+                quantities.add(Quantity);
+                foodId.add(id);
+
+            }catch(IllegalArgumentException e){
+                System.out.println(e);
+            }
+
+        }
+        
+        String[] foodIdArray = foodId.toArray(new String[0]);
+        int[] quantitiesArray = quantities.stream().mapToInt(i -> i).toArray(); // or .mapToInt(Integer::intValue)
+        
+        //process order
+        if(isOrdered){
+            controller.displayOrderedCart();
+            controller.order("234", "Online", foodIdArray, quantitiesArray);
+        }
+        //cancell order
+        else{
+            controller.cancelOrder(foodIdArray, quantitiesArray);
+        }
+
+        System.out.println("Tank you! have a good day!!!");
+    }
+
     public static void main(String[] args) {
-        Food sushi = new Food("1", "Sushi", 10, "Sea food", true);
-        Food pizza = new Food("2", "Pizza", 12, "Italian", true);
-        Food burger = new Food("3", "Cheeseburger", 8, "Fast food", true);
-        Food tacos = new Food("5", "Tacos", 7, "Mexican", true);
-        Food pasta_carbonara = new Food("7", "Pasta Carbonara", 13, "Italian", true);
-        Food falafel = new Food("8", "Falafel", 6, "Middle East", true);
-        Food butter_chicken = new Food("9", "Butter Chicken", 12, "Indian", true);
-        Food pho = new Food("10", "Pho", 9, "Vietnamese", true);
 
+        Controller controller = new Controller("2343");
+        controller.addFood("1", "Sushi", 10, "Sea food", true,2);
+        controller.addFood("2", "Falafel", 6, "Middle East", true,11);
+        controller.addFood("3", "Pizza", 12, "Italian", true,20);
+        controller.addFood("4", "Cheeseburger", 8, "Fast food", true,10);
+        controller.addFood("5", "Tacos", 7, "Mexican", true,10);
+        controller.addFood("6", "Pasta Carbonara", 13, "Italian", true,12);
+        controller.addFood("7", "Falafel", 6, "Middle East", true,11);
+        controller.addFood("8", "Butter Chicken", 12, "Indian", true,8);
 
-        Inventory inventory = new Inventory("12345");
-        inventory.addFood(sushi, 2);
-        inventory.addFood(pizza, 2);
-        inventory.addFood(burger, 2);
-        inventory.addFood(tacos, 2);
-        inventory.addFood(pasta_carbonara, 2);
-        inventory.addFood(falafel, 2);
-        inventory.addFood(butter_chicken, 2);
-        inventory.addFood(pho, 2);
+        Scanner scanner = new Scanner(System.in);
 
-        inventory.displayInventory();
+        App myApp = new App();
 
-        Order order1 = new Order("123","Online");
-        System.out.println("═══════════════════════════════════════════════════════ ORDER ═══════════════════════════════════════════════════════");
-        order1.addOrder(sushi.foodId, 1, sushi.price);
-        inventory.reduceStock(sushi.foodId, 1);
+        while(true){
+            System.out.println("═══════════════════════ SUN FLOWER ═══════════════════════");
+            System.out.println("1 For take Online order");
+            System.out.println("2 For take order");
+            System.out.println("3 Go back");
 
-        
-        System.out.println(order1.getOrderSummary());
-        
-        Transaction transaction2 = new Transaction("234", order1.orderId, order1.totalAmount,"QR");
-        System.out.println(transaction2.getTransactionReceipt());
+            String input = scanner.nextLine();
+            if(input.equalsIgnoreCase("3")){
+                break;
+            }
 
+            else if(input.equals("1")){
+                myApp.takeOrder(controller, scanner);
+            }
+            else if(input.equals("2")){
+                myApp.takeOrder(controller,scanner);
+                continue;
+            }
+        }
 
-        System.out.println("");
-        System.out.println("═════════════════════════════════════════════════ MEETING REQUIREMENT ════════════════════════════════════════════════");
-        System.out.println("Primitive vs Reference Behavior Demo \n");
-
-        // F1 — Primitive copy
-        // Copying a primitive creates an independent value
-        System.out.println("F1 - Primitive copy");
-        double foodPrice = 4.0;
-        double foodPriceCopy = foodPrice;    // independent copy
-
-        foodPrice = 2.5;                     // modifying original
-
-        System.out.println("  Original price    : " + foodPrice);
-        System.out.println("  Copied price      : " + foodPriceCopy);
-        System.out.println("  → Original changed, copy remains unchanged\n");
-
-        // F2 — Reference copy
-        // Copying a reference points to the same object
-        System.out.println("F2 - Reference copy");
-        Food ramen = new Food("6", "Ramen", 11, "Japanese", true);
-        System.out.println("  Original ramen    : " + ramen);
-
-        Food ramenCopy = ramen;              // same object, not a new one
-        ramenCopy.price = 14;                // modifying through copy affects original
-
-        System.out.println("  Modified via copy : " + ramen);
-        System.out.println("  → Both variables show the updated price\n");
-
-        // F3 — Array stores references
-        // Changes to objects in array are visible everywhere
-        System.out.println("F3 - Array stores references");
-        Food mySushi = inventory.findFood(sushi.foodId);   
-
-        if (mySushi != null) {
-            System.out.println("  Before change     : " + sushi);
-            sushi.price = 20;
-            System.out.println("  After change      : " + sushi);
-
-            System.out.println("\n  Inventory after change:");
-            inventory.displayInventory();
-        } 
-
-        System.out.println();
-
-        // F4 — Snapshot behavior (value copied at the time)
-        // Once a value is copied, it doesn't follow later changes
-        System.out.println("F4 - Snapshot behavior");
-        Order order = new Order("23456", "Online");
-        order.addOrder(burger.foodId, 1, burger.price);
-        inventory.reduceStock(burger.foodId, 1);
-
-        Transaction transaction = new Transaction("2345", order.orderId, order.totalAmount, "Cash");
-
-        double amountBefore = transaction.amount;
-        System.out.println("  Order total (snapshot) : $" + amountBefore);
-
-        burger.price = 12;   // changing the food price afterwards
-        System.out.println("  Burger price changed to: $" + burger.price);
-
-        double amountAfter = transaction.amount;
-        System.out.println("  Order total (still)    : $" + amountAfter);
-        System.out.println("  Transaction keeps the original captured amount\n");
-
+        scanner.close();
     }
 }
