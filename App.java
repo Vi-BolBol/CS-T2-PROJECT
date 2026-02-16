@@ -7,9 +7,6 @@ public class App {
 
     public void takeOrder( Controller controller,Scanner scanner ){
 
-        ArrayList<String> foodId = new ArrayList<>();
-        ArrayList<Integer> quantities = new ArrayList<>();
-
         boolean isOrdered = false;
         while(true){
             controller.displayInventory();
@@ -74,11 +71,8 @@ public class App {
             int Quantity = Integer.parseInt(quantity);
 
             try{
-                //add to cart to update stock level
+                //add to cart and update stock level
                 controller.addToCart(id,Quantity);
-
-                quantities.add(Quantity);
-                foodId.add(id);
 
             }catch(IllegalArgumentException e){
                 System.out.println(e);
@@ -86,8 +80,6 @@ public class App {
 
         }
         
-        String[] foodIdArray = foodId.toArray(new String[0]);
-        int[] quantitiesArray = quantities.stream().mapToInt(i -> i).toArray(); // or .mapToInt(Integer::intValue)
         
         //process order
         if(isOrdered){
@@ -96,16 +88,18 @@ public class App {
             //go back to the previous stage
             if(payment.equalsIgnoreCase("goBack")){
                 this.takeOrder(controller, scanner);
+                return;
             }
+
             else{
                 controller.displayOrderedCart();
-                controller.order("1", "Online", foodIdArray, quantitiesArray, payment);
+                controller.order("1", "Online", payment);
             }
 
         }
         //cancell order
         else{
-            controller.cancelOrder(foodIdArray, quantitiesArray);
+            controller.cancelOrder();
         }
 
         System.out.println("Tank you! have a good day!!!");
@@ -151,7 +145,7 @@ public class App {
 
 
         Scanner scanner = new Scanner(System.in);
-
+        
         App myApp = new App();
 
         while(true){

@@ -44,7 +44,7 @@ public class Controller{
             return;
         }
 
-        Food_quantity food_quantity = new Food_quantity(food.getName(), food.getPrice(), food.getCategory(), food.isAvailable(), quantity);
+        Food_quantity food_quantity = new Food_quantity(food.getFoodId(),food.getName(), food.getPrice(), food.getCategory(), food.isAvailable(), quantity);
 
         try{
             inventory.reduceStockLevelByIndex(index, quantity);
@@ -66,36 +66,16 @@ public class Controller{
     }
 
     //create one order, one order may contain many food, with diferent quantity 
-    public void order(String orderId, String orderType , String[] foodId, int[] quantities, String payment){
+    public void order(String orderId, String orderType, String payment){
         Order order = new Order(orderId, orderType);
-        if(foodId.length != quantities.length){
-            System.out.println("Food Id length must be equal to Quantity lenth");
-            return;
-        }
 
         ArrayList<Food_quantity> allOrder = cart.getOrder();
         
         for(int i = 0;i < allOrder.size();i++){
             Food_quantity food = allOrder.get(i);
             order.addOrder(food.getFoodId(),food.getQuantity(),food.getPrice());
-            System.out.println("cart size is" + food.getPrice());
         }
 
-
-        // for( int i = 0 ; i < foodId.length ; i++){
-
-        //     Food food = inventory.getFoodByIndex(foodId[i]);
-            
-        //     if(food == null){
-        //         System.out.println("Food ID " + foodId[i] + " Not found !");
-        //         return;
-        //     }
-        //     else{
-        //         order.addOrder(food.getFoodId(), quantities[i], food.getPrice());
-        //     }
-        // }
-
-        System.out.println("order price is " + order.getTotalPrice());
         this.paymentIntegration(order.getOrderId(), order.getTotalPrice(), payment, "completed");
         cart.clearCartItem();
     }
@@ -110,11 +90,15 @@ public class Controller{
         System.out.println(transaction.getTransactionReceipt());
     }
 
-    public void cancelOrder(String[] ids,int[] quantities){
-        for(int i = 0;i<ids.length;i++){
-            //  get id from food in inventory 
-            inventory.addStockLevelByIndex(ids[i], quantities[i]);
+    public void cancelOrder(){
+        ArrayList<Food_quantity> allOrder = cart.getOrder();
+        
+        for(int i = 0;i < allOrder.size();i++){
+            Food_quantity food = allOrder.get(i);
+            System.out.println("restock" + food.getName() + "quantity" + food.getQuantity());
+            inventory.AddtockLevelByID(food.getFoodId(), food.getQuantity());
         }
+
         cart.clearCartItem();
     }
     

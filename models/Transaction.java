@@ -94,13 +94,13 @@ public class Transaction {
     public String getTransactionReceipt() {
         System.out.println("");
       return String.format("══════════ RECEIPT ══════════\n" +
-                           "Transaction ID: %s\n" +
-                           "Order ID: %s\n" +
+                           //"Transaction ID: %s\n" +
+                           //"Order ID: %s\n" +
                            "Amount: $%.2f\n" +
                            "Payment Method: %s\n" +
                            "Status: %s\n" +
                            "Date: %s\n" +
                            "═════════ SUNFLOWER ═════════",
-            transactionId, orderId, amount, paymentMethod, status, getFormattedDate());
+                            amount, paymentMethod, status, getFormattedDate());
     }
 }

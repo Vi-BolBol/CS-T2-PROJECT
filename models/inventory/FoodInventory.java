@@ -1,17 +1,17 @@
 package models.inventory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+//import java.util.UUID;
 
 import models.Food;
 
 public class FoodInventory {
-    private String inventoryId;
+    //private String inventoryId;
     private List<Food> foodItems;
     private List<Integer> stockLevels; 
 
     public FoodInventory() {
-        this.inventoryId = UUID.randomUUID().toString();
+        //this.inventoryId = UUID.randomUUID().toString();
         this.foodItems = new ArrayList<>();
         this.stockLevels = new ArrayList<>();
     }
@@ -159,6 +159,31 @@ public class FoodInventory {
         return count;
     }
 
+    public void AddtockLevelByID(String foodId, int quantity) {
+        if (foodId == null || foodId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Food ID cannot be empty");
+        }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Restock quantity must be greater than 0");
+        }
+        
+        for (int i = 0; i < foodItems.size(); i++) {
+            if (foodItems.get(i).getFoodId().equals(foodId)) {
+                int currentStock = stockLevels.get(i);
+                int newStock = currentStock + quantity;
+                stockLevels.set(i, newStock);
+
+                System.out.println("restock completed");
+                Food food = foodItems.get(i);
+                if (!food.isAvailable() && newStock > 0) {
+                    food.setAvailable(true);
+                }
+                return;
+            }
+            System.out.println(foodItems.get(i).getFoodId().equals(foodId));
+        }
+    }
+
     public void displayInventory(){
         System.out.println("");
         System.out.println("");
@@ -181,7 +206,7 @@ public class FoodInventory {
             String status = stock == 0 ? "OUT OF STOCK" :
                             stock < 10 ? "LOW STOCK" : "In Stock";
 
-            System.out.printf("%3d  %-20s %-12s $%6.2f   %4d   %s%n",
+            System.out.printf("%3s  %-20s %-12s $%6.2f   %4d   %s%n",
                     i+1,
                     food.getName(),
                     food.getCategory(),
