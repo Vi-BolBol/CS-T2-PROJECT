@@ -9,7 +9,7 @@ public class CartInventory {
         this.ordered = new ArrayList<>();
     }
 
-    //get order 
+    //get orders 
     public ArrayList<Food_quantity> getOrder(){
         return ordered;
     }
@@ -39,7 +39,7 @@ public class CartInventory {
         System.out.println();
         System.out.println("═══════════════════════ ORDERED ════════════════════════");
         System.out.println("────────────────────────────────────────────────────────");
-        System.out.println("   ID    Name                  Price    Qty     Total  ");
+        System.out.println("Name                  Price    Qty     Total  ");
         System.out.println("────────────────────────────────────────────────────────");
 
         double total = 0;
@@ -48,15 +48,14 @@ public class CartInventory {
             double lineTotal = item.getPrice() * item.getQuantity();
             total += lineTotal;
 
-            System.out.printf("%4s   %-20s   $%6.2f   %3d    $%6.2f%n",
-                    item.getFoodId(),
+            System.out.printf("%-20s   $%6.2f   %3d    $%6.2f%n",
                     item.getName(),
                     item.getPrice(),
                     item.getQuantity(),
                     lineTotal);
         }
 
-        System.out.println("──────────────────────────────────────────────────────");
+        System.out.println("────────────────────────────────────────────────────────");
         System.out.printf("                            Sub-Total: $%8.2f%n", total);
         System.out.println();
     }

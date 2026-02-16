@@ -38,6 +38,7 @@ public class App {
             }
 
             if(id.equalsIgnoreCase("q")){
+                isOrdered = false;
                 break;
             }
 
@@ -46,11 +47,14 @@ public class App {
                 continue;
             }
 
+            if(!controller.isIDExist(id) ){ // id validation
+                System.out.println(id + " Does not exist!");
+                continue;
+            }
 
-
-             if(!controller.isIDExist(id) ){ // id validation
-                 System.out.println(id + " Does not exist!");
-                 continue;
+            if(!controller.isFoodAvailable(id)){
+                System.out.println("Sorry ! " + id + " is unavilable for now");
+                continue;
             }
 
             String quantity = null;
@@ -87,8 +91,17 @@ public class App {
         
         //process order
         if(isOrdered){
-            controller.displayOrderedCart();
-            controller.order("234", "Online", foodIdArray, quantitiesArray);
+            String payment = this.paymentMethod(scanner);
+
+            //go back to the previous stage
+            if(payment.equalsIgnoreCase("goBack")){
+                this.takeOrder(controller, scanner);
+            }
+            else{
+                controller.displayOrderedCart();
+                controller.order("1", "Online", foodIdArray, quantitiesArray, payment);
+            }
+
         }
         //cancell order
         else{
@@ -97,18 +110,45 @@ public class App {
 
         System.out.println("Tank you! have a good day!!!");
     }
+    
+    public String paymentMethod(Scanner scanner){
+
+        String[] paymentMethod = {"QR","Cash","Card","Online"};
+
+        while(true){
+            System.out.println("═══════════════════════ PAYMENT METHOD ═══════════════════════");
+            System.out.println("1 QR");
+            System.out.println("2 Cash");
+            System.out.println("3 Credit Card");
+            System.out.println("4 Online");
+            System.out.println("5 Back");
+            String payment = scanner.nextLine();
+
+            if(payment.equals("1") || payment.equals("2") || payment.equals("3") || payment.equals("4")){
+                return paymentMethod[Integer.parseInt(payment) - 1];
+            }
+            else if(payment.equals("5")){
+                return "goBack";
+            }
+            else{
+                System.out.println("Invalid choice!");
+            }
+        }
+
+    }
 
     public static void main(String[] args) {
 
         Controller controller = new Controller("2343");
-        controller.addFood("1", "Sushi", 10, "Sea food", true,2);
-        controller.addFood("2", "Falafel", 6, "Middle East", true,11);
-        controller.addFood("3", "Pizza", 12, "Italian", true,20);
-        controller.addFood("4", "Cheeseburger", 8, "Fast food", true,10);
-        controller.addFood("5", "Tacos", 7, "Mexican", true,10);
-        controller.addFood("6", "Pasta Carbonara", 13, "Italian", true,12);
-        controller.addFood("7", "Falafel", 6, "Middle East", true,11);
-        controller.addFood("8", "Butter Chicken", 12, "Indian", true,8);
+        controller.addFood("Sushi", 10, "Sea food", true,2);
+        controller.addFood("Falafel", 6, "Middle East", true,11);
+        controller.addFood("Pizza", 12, "Italian", true,20);
+        controller.addFood("Cheeseburger", 8, "Fast food", true,10);
+        controller.addFood("Tacos", 7, "Mexican", true,10);
+        controller.addFood("Pasta Carbonara", 13, "Italian", true,12);
+        controller.addFood("Falafel", 6, "Middle East", true,11);
+        controller.addFood("Butter Chicken", 12, "Indian", true,8);
+
 
         Scanner scanner = new Scanner(System.in);
 
@@ -116,8 +156,8 @@ public class App {
 
         while(true){
             System.out.println("═══════════════════════ SUN FLOWER ═══════════════════════");
-            System.out.println("1 For take Online order");
-            System.out.println("2 For take order");
+            System.out.println("1 For Online Order Service");
+            System.out.println("2 For Table Order Service");
             System.out.println("3 Go back");
 
             String input = scanner.nextLine();
@@ -132,8 +172,14 @@ public class App {
                 myApp.takeOrder(controller,scanner);
                 continue;
             }
+            else{
+                System.out.println("Invalid choice!");
+            }
         }
 
         scanner.close();
     }
 }
+
+// let user chose payment method 
+// support dinning table 

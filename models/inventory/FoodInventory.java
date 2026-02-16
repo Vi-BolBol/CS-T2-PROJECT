@@ -15,7 +15,7 @@ public class FoodInventory {
         this.foodItems = new ArrayList<>();
         this.stockLevels = new ArrayList<>();
     }
-
+ 
     public void addFood(Food food, int initialStock) {
         if (food == null) {
             throw new IllegalArgumentException("Food item cannot be null");
@@ -38,138 +38,113 @@ public class FoodInventory {
         }
     }
 
-    public void removeFood(String foodId) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        
-        int index = -1;
-        for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
-                index = i;
-                break;
-            }
-        }
-        
-        if (index != -1) {
-            foodItems.remove(index);
-            stockLevels.remove(index);
-        }
-    }
+    public Food getFoodByIndex(String index){
 
-    public Food findFood(String foodId) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        
-        for (Food food : foodItems) {
-            if (food.getFoodId().equals(foodId)) {
-                return food;
-            }
-        }
-        return null;
-    }
-
-    public int getStock(String foodId) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        
-        for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
-                return stockLevels.get(i);
-            }
-        }
-        return -1;
-    }
-
-
-    //set old stock level to new stock level 
-    public void setStockLevel(String foodId, int newStock) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-
-        if (newStock < 0) {
-            throw new IllegalArgumentException("Stock level cannot be negative");
-        }
-        
-        for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
-                stockLevels.set(i, newStock);
-
-                Food food = foodItems.get(i);
-                if (newStock == 0) {
-                    food.setAvailable(false); 
-                } else {
-                    food.setAvailable(true); 
-                }
-                return;
-            }
-        }
-    }
-
-    //add to stock
-    public void addStockLevel(String foodId, int quantity) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Restock quantity must be greater than 0");
-        }
-        
-        for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
-                int currentStock = stockLevels.get(i);
-                int newStock = currentStock + quantity;
-                stockLevels.set(i, newStock);
-
-                Food food = foodItems.get(i);
-                if (!food.isAvailable() && newStock > 0) {
-                    food.setAvailable(true); 
-                }
-                return;
-            }
-        }
-    }
-
-    //reduce 
-    public void reduceStockLevel(String foodId, int quantity) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than 0");
-        }
-        
-        for (int i = 0; i < foodItems.size(); i++) {
-            if (foodItems.get(i).getFoodId().equals(foodId)) {
-                int currentStock = stockLevels.get(i);
-                
-                if (currentStock < quantity) {
-                    throw new IllegalArgumentException("Insufficient stock. Available: " + currentStock + ", Requested: " + quantity);
-                }
-                
-                int newStock = currentStock - quantity;
-                stockLevels.set(i, newStock);
-
-                Food food = foodItems.get(i);
-                if (newStock == 0) {
-                    food.setAvailable(false);
-                }
-                return;
-            }
-        }
-    }
-
-    public Food getFoodByIndex(int index){
-        System.out.println(index);
-        if(index >= foodItems.size()){
+        if(!index.matches("\\d+")){
             return null;
         }
-        return foodItems.get(index);
+
+        int i = Integer.parseInt(index) -1;
+
+        if( i >= foodItems.size() || i < 0){
+            return null;
+        }
+
+        return foodItems.get(i);
     }
-    
+
+    public void removeFoodByIndex(String index){
+
+        if (index == null || index.trim().isEmpty() ) {
+            throw new IllegalArgumentException("Food ID cannot be empty");
+        }
+
+        if(!index.matches("\\d+")){
+            throw new IllegalArgumentException("Index must be Number!");
+        }
+
+        int i = Integer.parseInt(index) -1;
+
+        if(i >= foodItems.size() || i < 0){
+            throw new IllegalArgumentException("Index out of bound");
+        }
+
+        foodItems.remove(i);
+        stockLevels.remove(i);
+
+    }
+
+    public void addStockLevelByIndex(String index, int quantity){
+        Food food = this.getFoodByIndex(index);
+        if(food == null){
+            throw new IllegalArgumentException("Invalid index");
+        }
+
+        int i = Integer.parseInt(index) - 1;
+
+        stockLevels.set(i, quantity + stockLevels.get(i));
+
+        if (!food.isAvailable() && quantity > 0) {
+            food.setAvailable(true); 
+        }
+
+    }
+
+    public void reduceStockLevelByIndex(String index, int quantity){
+        Food food = this.getFoodByIndex(index);
+
+        if(food == null){
+            throw new IllegalArgumentException("Invalid index");
+        }
+
+        int i = Integer.parseInt(index) - 1;
+
+        int currentStock = stockLevels.get(i);
+
+        if (currentStock < quantity) {
+            throw new IllegalArgumentException("Insufficient stock. Available: " + currentStock + ", Requested: " + quantity);
+        }
+
+        stockLevels.set(i,currentStock - quantity);
+
+        if (stockLevels.get(i) == 0) {
+            food.setAvailable(false); 
+        }
+
+    }
+
+    public int getStockByIndex(String index){
+
+        if(!index.matches("\\d+")){
+            throw new IllegalArgumentException("Index must be Number!");
+        }
+
+        int i = Integer.parseInt(index) -1;
+
+        if(i >= foodItems.size() || i < 0){
+            throw new IllegalArgumentException("Index out of bound");
+        }
+
+        return stockLevels.get(i);
+    }
+
+    public void setStockLevelByIndex(String index, int quantity){
+        Food food = this.getFoodByIndex(index);
+        if(food == null){
+            throw new IllegalArgumentException("Invalid index");
+        }
+
+        int i = Integer.parseInt(index) - 1;
+
+        stockLevels.set(i, quantity);
+
+        if (quantity == 0) {
+            food.setAvailable(false); 
+        } else {
+            food.setAvailable(true); 
+        }
+    }
+
     public int getTotalItems() {
         return foodItems.size();
     }

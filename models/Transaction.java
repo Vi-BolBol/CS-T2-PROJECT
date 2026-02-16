@@ -1,7 +1,7 @@
 package models;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.UUID;
 public class Transaction {
 
     private String transactionId;
@@ -11,8 +11,8 @@ public class Transaction {
     private LocalDateTime transactionDate;
     private String status;
 
-    public Transaction(String transactionId, String orderId, double amount, String paymentMethod,String status) {
-        setTransactionId(transactionId);
+    public Transaction(String orderId, double amount, String paymentMethod,String status) {
+        this.transactionId = UUID.randomUUID().toString();
         setOrderId(orderId);
         setAmount(amount);
         setPaymentMethod(paymentMethod);
@@ -42,13 +42,6 @@ public class Transaction {
 
     public String getStatus() {
         return status;
-    }
-
-    public void setTransactionId(String transactionId) {
-        if (transactionId == null || transactionId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Transaction ID cannot be empty");
-        }
-        this.transactionId = transactionId;
     }
 
     public void setOrderId(String orderId) {

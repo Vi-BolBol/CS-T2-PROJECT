@@ -1,4 +1,5 @@
 package models;
+import java.util.UUID;;
 public class Food {
     private String foodId;
     private String name;
@@ -6,8 +7,8 @@ public class Food {
     private String category;
     private boolean available;
 
-    public Food(String foodId, String name, double price, String category, boolean available) {
-        setFoodId(foodId);
+    public Food(String name, double price, String category, boolean available) {
+        this.foodId = UUID.randomUUID().toString();
         setName(name);
         setPrice(price);
         setCategory(category);
@@ -32,13 +33,6 @@ public class Food {
 
     public boolean isAvailable() {
         return available;
-    }
-
-    public void setFoodId(String foodId) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        this.foodId = foodId;
     }
 
     public void setName(String name) {
