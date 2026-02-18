@@ -8,18 +8,29 @@ public class App {
     public void takeOrder( Controller controller,Scanner scanner ){
 
         boolean isOrdered = false;
+        String tableNumber = null;
+
         while(true){
             controller.displayInventory();
 
             System.out.println("═══════════════════════ FOOD ID ═══════════════════════");
-            System.out.println("Enter Food id for ordering !:");
-            System.out.println("Q/q for stop & cancel order");
+            System.out.println("Enter Food ID for ordering !:");
+            System.out.println("Q/q for Quit & cancel order");
 
             boolean cartHasItem = controller.getCartSize() > 0;
 
             if(cartHasItem){
                 System.out.println("O/o for see Ordere!");
+
+                if(tableNumber != null){
+                    System.out.println("[Table Number "+tableNumber+"] " + "T/t for change Table number.");
+                }
+
+                else{
+                    System.out.println("T/t for choose Table");
+                }
                 System.out.println("C/c for Checkout!");
+
             }
 
             String id = scanner.nextLine();
@@ -29,9 +40,20 @@ public class App {
                 continue;
             }
 
-            if(cartHasItem && id.equalsIgnoreCase("c")){
+            if(cartHasItem && id.equalsIgnoreCase("C")){
                 isOrdered = true;
                 break;
+            }
+
+            if(id.equalsIgnoreCase("T")){
+
+                while(true){
+                    tableNumber = this.choosingTable(controller, scanner);
+                    if(tableNumber != null){
+                        break;
+                    }
+                }
+                continue;
             }
 
             if(id.equalsIgnoreCase("q")){
@@ -71,7 +93,6 @@ public class App {
             int Quantity = Integer.parseInt(quantity);
 
             try{
-                //add to cart and update stock level
                 controller.addToCart(id,Quantity);
 
             }catch(IllegalArgumentException e){
@@ -79,7 +100,6 @@ public class App {
             }
 
         }
-        
         
         //process order
         if(isOrdered){
@@ -93,7 +113,13 @@ public class App {
 
             else{
                 controller.displayOrderedCart();
-                controller.order("1", "Online", payment);
+
+                if(tableNumber != null){
+                    controller.order("1", "Table", payment,tableNumber);
+                }
+                else{
+                    controller.order("1", "Online", payment,tableNumber);
+                }
             }
 
         }
@@ -102,9 +128,13 @@ public class App {
             controller.cancelOrder();
         }
 
-        System.out.println("Tank you! have a good day!!!");
+        System.out.println("Thank you! have a good day!!!");
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println(" ");
     }
-    
+
     public String paymentMethod(Scanner scanner){
 
         String[] paymentMethod = {"QR","Cash","Card","Online"};
@@ -131,9 +161,26 @@ public class App {
 
     }
 
+    public String choosingTable(Controller controller, Scanner scanner){
+
+        controller.displayTableInventory();
+        System.out.println("═══════════════════════ Quantity ═══════════════════════");
+        System.out.println("Enter Table Number: ");
+        String tableIndex = scanner.nextLine();
+
+        if(!controller.validateTableIndex(tableIndex)){
+            System.out.println("Please, enter a valid choice!");
+            return null;
+        }
+
+        return tableIndex;
+    }
+
     public static void main(String[] args) {
 
         Controller controller = new Controller("2343");
+
+        // Food
         controller.addFood("Sushi", 10, "Sea food", true,2);
         controller.addFood("Falafel", 6, "Middle East", true,11);
         controller.addFood("Pizza", 12, "Italian", true,20);
@@ -143,15 +190,34 @@ public class App {
         controller.addFood("Falafel", 6, "Middle East", true,11);
         controller.addFood("Butter Chicken", 12, "Indian", true,8);
 
+        // Standard Seating
+        controller.addTable(4, false, false, "Main Hall", 0);
+        controller.addTable(2, true, false, "Main Hall", 0);
+        controller.addTable(6, false, false, "Terrace", 0);
+        controller.addTable(4, false, false, "Terrace", 5.50);
+
+        // VIP Seating
+        controller.addTable(2, false, true, "Window Side", 25.0);
+        controller.addTable(8, true, true, "Private Room", 100.0);
+        controller.addTable(4, false, true, "Balcony", 45.0);
+
+        // Bar & Casual
+        controller.addTable(1, false, false, "Bar Counter", 0);
+        controller.addTable(1, true, false, "Bar Counter", 0);
+
+        // Special Large Table
+        controller.addTable(12, false, true, "Grand Suite", 150.0);
+
+        controller.displayTableInventory();
 
         Scanner scanner = new Scanner(System.in);
-        
+
         App myApp = new App();
 
         while(true){
             System.out.println("═══════════════════════ SUN FLOWER ═══════════════════════");
-            System.out.println("1 For Online Order Service");
-            System.out.println("2 For Table Order Service");
+            System.out.println("1 For  Order Service");
+            System.out.println("2 For  Order Service");
             System.out.println("3 Go back");
 
             String input = scanner.nextLine();
@@ -175,5 +241,3 @@ public class App {
     }
 }
 
-// let user chose payment method 
-// support dinning table 

@@ -7,17 +7,24 @@ public class Transaction {
     private String transactionId;
     private String orderId;
     private double amount;
+
     private String paymentMethod;
     private LocalDateTime transactionDate;
     private String status;
 
-    public Transaction(String orderId, double amount, String paymentMethod,String status) {
+    private double discount ;
+    private double total;
+
+    public Transaction(String orderId, double amount, String paymentMethod,String status, double discount) {
         this.transactionId = UUID.randomUUID().toString();
         setOrderId(orderId);
         setAmount(amount);
         setPaymentMethod(paymentMethod);
         this.transactionDate = LocalDateTime.now();
         setStatus(status);
+
+        setDiscount(discount);
+        calculateDiscount();
     }
 
     public String getTransactionId() {
@@ -49,6 +56,19 @@ public class Transaction {
             throw new IllegalArgumentException("Order ID cannot be empty");
         }
         this.orderId = orderId;
+    }
+
+    public void setDiscount(double discount){
+        if(discount <= 0 || discount >= 100){
+            throw new IllegalArgumentException("Invalid discount");
+        }
+        this.discount = discount;
+    }
+
+    public void calculateDiscount(){
+        double discountPrice = (discount * amount) / 100;
+        this.total = amount - discountPrice;
+
     }
 
     public void setAmount(double amount) {
@@ -93,14 +113,27 @@ public class Transaction {
 
     public String getTransactionReceipt() {
         System.out.println("");
-      return String.format("══════════ RECEIPT ══════════\n" +
-                           //"Transaction ID: %s\n" +
-                           //"Order ID: %s\n" +
-                           "Amount: $%.2f\n" +
-                           "Payment Method: %s\n" +
-                           "Status: %s\n" +
-                           "Date: %s\n" +
-                           "═════════ SUNFLOWER ═════════",
-                            amount, paymentMethod, status, getFormattedDate());
+                            
+        return String.format(
+            "══════════════════════ RECEIPT ══════════════════════\n" +
+            "%-20s %30s\n" + // Sub-Total
+            "─────────────────────────────────────────────────────\n" +
+            "%-20s %29.2f%%\n" + // Discount (adjusted for % symbol)
+            "─────────────────────────────────────────────────────\n" +
+            "%-20s %30s\n" + // Total
+            "─────────────────────────────────────────────────────\n" +
+            "%-20s %31s\n" + // Payment Method
+            "─────────────────────────────────────────────────────\n" +
+            "%-20s %31s\n" + // Status
+            "─────────────────────────────────────────────────────\n" +
+            "%-20s %31s\n" + // Date
+            "═════════════════════ SUNFLOWER ═════════════════════",
+            "Sub-Total:", String.format("$%.2f", amount),
+            "Discount:", discount,
+            "Total:", String.format("$%.2f", total),
+            "Payment Method:", paymentMethod,
+            "Status:", status,
+            "Date:", getFormattedDate()
+        );
     }
 }
