@@ -1,22 +1,42 @@
-public class Food {
-    private String foodId;
+package models;
+import db.DatabaseObject;
+
+public class Food extends DatabaseObject{
     private String name;
     private double price;
     private String category;
     private boolean available;
+    private int quantity;
 
-    public Food(String foodId, String name, double price, String category, boolean available) {
-        setFoodId(foodId);
+    public Food(String name, double price, String category, boolean available,int quantity) {
+        super();
         setName(name);
         setPrice(price);
         setCategory(category);
         setAvailable(available);
+        setQuantity(quantity);
+        syncAvilable();
     }
 
-    public String getFoodId() {
-        return foodId;
+    public void syncAvilable(){
+        if(quantity == 0){
+            available = false;
+        }
+        else{
+            available = true;
+        }
     }
 
+    public int getQuantity(){
+        return quantity;
+    }
+    
+    public void setQuantity(int quantity){
+        if(quantity < 0){
+            throw new IllegalArgumentException("Quantity must be possitive");
+        }
+        this.quantity = quantity;
+    }
     public String getName() {
         return name;
     }
@@ -31,13 +51,6 @@ public class Food {
 
     public boolean isAvailable() {
         return available;
-    }
-
-    public void setFoodId(String foodId) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
-        this.foodId = foodId;
     }
 
     public void setName(String name) {
@@ -66,7 +79,7 @@ public class Food {
     }
 
     public String getDisplayInfo() {
-        return String.format("[%s] %s - $%.2f (%s) - %s", 
-            foodId, name, price, category, available ? "Available" : "Sold Out");
+        return String.format("%s - $%.2f (%s) - %s %d", 
+            name, price, category, available ? "Available" : "Sold Out",quantity);
     }
 }

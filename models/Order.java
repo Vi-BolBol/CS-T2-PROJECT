@@ -1,20 +1,24 @@
+package models;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order {
-    private String orderId;
+import db.DatabaseObject;
+
+public class Order extends DatabaseObject{
+    
     private String orderType; 
     private String tableId;   
-    private List<String> foodItems;  
+    private List<Food> foodItems;  
     private List<Integer> quantities; 
     private double totalAmount;
     private LocalDateTime orderDate;
     private String status;
 
-    public Order(String orderId, String orderType) {
-        setOrderId(orderId);
+    public Order(String orderType) {
+        
         setOrderType(orderType);
         
         if (orderType.equalsIgnoreCase("Online")) {
@@ -28,8 +32,20 @@ public class Order {
         setStatus("Pending");
     }
 
-    public Order(String orderId, String orderType, String tableId) {
-        setOrderId(orderId);
+    public Order(){
+
+        this.tableId = null;
+        
+        this.foodItems = new ArrayList<>();
+        this.quantities = new ArrayList<>();
+        this.totalAmount = 0.0;
+        this.orderDate = LocalDateTime.now();
+        setStatus("Pending");
+        
+    }
+
+    public Order(String orderType, String tableId) {
+        
         setOrderType(orderType);
         
         if (orderType.equalsIgnoreCase("Table")) {
@@ -45,11 +61,6 @@ public class Order {
         setStatus("Pending");
     }
 
-    // Getters
-    public String getOrderId() {
-        return orderId;
-    }
-
     public String getOrderType() {
         return orderType;
     }
@@ -58,7 +69,7 @@ public class Order {
         return tableId;
     }
 
-    public List<String> getFoodItems() {
+    public List<Food> getFoodItems() {
         return new ArrayList<>(foodItems);
     }
 
@@ -78,13 +89,6 @@ public class Order {
         return status;
     }
 
-    public void setOrderId(String orderId) {
-        if (orderId == null || orderId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Order ID cannot be empty");
-        }
-        this.orderId = orderId;
-    }
-
     public void setOrderType(String orderType) {
         if (orderType == null || orderType.trim().isEmpty()) {
             throw new IllegalArgumentException("Order type cannot be empty");
@@ -95,6 +99,10 @@ public class Order {
             throw new IllegalArgumentException("Must be: Online or Table");
         }
         this.orderType = orderType;
+
+        if(upperType.equals("TABLE")){
+            setTableId("12345");
+        }
     }
 
     public void setTableId(String tableId) {
@@ -126,10 +134,8 @@ public class Order {
         this.status = status;
     }
 
-    public void addItem(String foodId, int quantity, double price) {
-        if (foodId == null || foodId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Food ID cannot be empty");
-        }
+    public void addItem(Food food, int quantity, double price) {
+
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than 0");
         }
@@ -137,13 +143,13 @@ public class Order {
             throw new IllegalArgumentException("Price must be greater than 0");
         }
 
-        foodItems.add(foodId);
+        foodItems.add(food);
         quantities.add(quantity);
         totalAmount += (price * quantity);
     }
 
-    public void removeItem(String foodId, double price) {
-        int index = foodItems.indexOf(foodId);
+    public void removeItem(Food food, double price) {
+        int index = foodItems.indexOf(food);
         if (index != -1) {
             int quantity = quantities.get(index);
             totalAmount -= (price * quantity);
@@ -170,8 +176,69 @@ public class Order {
     }
 
     public String getOrderSummary() {
-        String tableInfo = isTableOrder() ? " - Table " + tableId : " - Online Order";
-        return String.format("Order %s%s - Items: %d - Total: $%.2f - Status: %s - Date: %s",
-            orderId, tableInfo, getItemCount(), totalAmount, status, getFormattedDate());
+        // ANSI color codes (only work in terminals that support them)
+        String RESET   = "\u001B[0m";
+        String CYAN    = "\u001B[36m";
+        String GREEN   = "\u001B[32m";
+        String YELLOW  = "\u001B[33m";
+        String BLUE    = "\u001B[34m";
+        String BOLD    = "\u001B[1m";
+        String RED     = "\u001B[31m";
+        String GRAY    = "\u001B[90m";
+
+        StringBuilder sb = new StringBuilder();
+
+        // Header
+        String orderType = isTableOrder() ? "Table " : "Online Order";
+        sb.append(CYAN).append(BOLD)
+        .append("═══════════════════════════════════════════════════════\n")
+        .append(" ORDER SUMMARY ").append(orderType).append("\n")
+        .append("═══════════════════════════════════════════════════════\n").append(RESET);
+
+        // Items list
+        if (foodItems.isEmpty()) {
+            sb.append(GRAY).append("   No items in this order yet.\n").append(RESET);
+        } else {
+            sb.append(BLUE).append(" #   Item                          Qty    Price     Subtotal\n")
+            .append("───────────────────────────────────────────────────────").append(RESET).append("\n");
+
+            for (int i = 0; i < foodItems.size(); i++) {
+                Food food = foodItems.get(i);
+                double subtotal = food.getPrice() * quantities.get(i);
+
+                String nameDisplay = food.getName();
+                if (nameDisplay.length() > 25) {
+                    nameDisplay = nameDisplay.substring(0, 22) + "...";
+                }
+
+                sb.append(String.format(GRAY + "%2d" + RESET + "  %-25s  " + GREEN + "%3d" + RESET + " x " 
+                    + YELLOW + "$%5.2f" + RESET + "  =  " + BOLD + YELLOW + "$%6.2f" + RESET + "\n",
+                    i + 1,
+                    nameDisplay,
+                    quantities.get(i),
+                    food.getPrice(),
+                    subtotal
+                ));
+            }
+        }
+
+        // Summary line
+        sb.append("───────────────────────────────────────────────────────\n");
+        sb.append(BOLD).append(" Total items: ").append(RESET).append(foodItems.size())
+        .append("          ").append(BOLD).append("Grand Total: ").append(RESET)
+        .append(GREEN).append(BOLD).append(String.format("$%.2f", totalAmount)).append(RESET).append("\n");
+
+        // Status & Date
+        String statusColor = switch (status.toLowerCase()) {
+            case "completed", "paid"   -> GREEN;
+            case "pending", "new"      -> YELLOW;
+            case "cancelled", "failed" -> RED;
+            default                    -> BLUE;
+        };
+
+        sb.append(GRAY).append(" Status: ").append(statusColor).append(BOLD).append(status).append(RESET)
+        .append(GRAY).append("   -   Date: ").append(RESET).append(getFormattedDate()).append("\n");
+
+        return sb.toString();
     }
-}
+    }
