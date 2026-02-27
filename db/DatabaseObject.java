@@ -15,3 +15,5 @@ public class DatabaseObject {
     public String getId() { return id; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
+
+// I was planning to use this component for Abstract, However I din't find any common subtract method for sub class

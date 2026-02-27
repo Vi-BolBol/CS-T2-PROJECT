@@ -5,6 +5,7 @@ import db.Database;
 import models.Food;
 import models.Order;
 import models.Table;
+import models.Transaction;
 
 public class Controller{
     private Database postgreSQL;
@@ -69,12 +70,14 @@ public class Controller{
                 default                    -> GRAY + t.getStatus() + RESET;
             };
 
-        System.out.printf(BOLD + "%2d." + RESET + "  %d seats   " + YELLOW + "$%.2f" + RESET + "   %s\n",
-                i++, t.getCapacity(), t.getPrice(), statusLine);
+            System.out.printf(BOLD + "%2d." + RESET + "  %d seats   " + YELLOW + "$%.2f" + RESET + "   %s\n",
+                    i++, t.getCapacity(), t.getPrice(), statusLine);
 
-        System.out.println("   " + GRAY + t.getLocation() + RESET + " > " + t.getDescription());
-        System.out.println();
-    }
+            System.out.println("   " + GRAY + t.getLocation() + RESET + " > " + t.getDescription());
+            System.out.println();
+
+            System.out.println(GRAY + "───────────────────────────────────────────────────────────────" + RESET);
+        }
 
     System.out.println(CYAN + "══════════════════════════════════════════════════════════════" + RESET);
     System.out.printf(GRAY + "Total: %d tables" + RESET + "\n\n", tables.size());
@@ -140,6 +143,7 @@ public class Controller{
 
     public void orderFood(){
         List<Food> sorted = this.displayFood();
+        List<Table> sortedTable = this.displayTable();
 
         Order order = new Order();
 
@@ -160,10 +164,39 @@ public class Controller{
         updateFoodQuantity(order4, 1);
 
         //order.setOrderType("Online"); // online order
+
+        
         order.setOrderType("Table");  // Table order
         // for table order we need to connect that table to order, so that we know which table has occuper 
+        
+        Table tablePickByUser = sortedTable.get(2);
+        tablePickByUser.setOccupied(true);
+        postgreSQL.update(tablePickByUser.getId(), tablePickByUser);
+
+        //connect dedicated table to order
+        order.setTableId(tablePickByUser.getId());
+
+
+        // when user Check out
+        // display order info
+        // display table info if user chose table service
+        // process payment and print Transaction Info 
 
         System.out.println(order.getOrderSummary());
+
+        tablePickByUser.TableInfo();
+
+        Transaction transaction = new Transaction(order.getId(), order.getTotalAmount(), tablePickByUser.getPrice(), 20, "QR");
+        transaction.transactionInfo();
+
     }
     
 }
+
+// transaction process 
+
+// total food price
+// total table price 
+// subtotal 
+// discount
+// total for pay

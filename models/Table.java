@@ -58,4 +58,31 @@ public class Table extends DatabaseObject {
     public String getStatus() {
         return isOccupied ? "Occupied" : "Available";
     }
+
+    public void TableInfo(){
+        String RESET  = "\u001B[0m";
+        String CYAN   = "\u001B[36m";
+        String GREEN  = "\u001B[32m";
+        String YELLOW = "\u001B[33m";
+        String RED    = "\u001B[31m";
+        String GRAY   = "\u001B[90m";
+        String BOLD   = "\u001B[1m";
+
+        System.out.println(CYAN + "                   Your Ordered Table" + RESET);
+
+        String statusLine = switch (this.getStatus().toLowerCase()) {
+            case "available", "free"   -> GREEN + " Available" + RESET;
+            case "reserved", "booked"  -> YELLOW + " Reserved" + RESET;
+            case "occupied", "in-use"  -> RED + " Occupied" + RESET;
+            default                    -> GRAY + this.getStatus() + RESET;
+        };
+
+        System.out.printf(BOLD + " %d seats   " + YELLOW + "$%.2f" + RESET + "   %s\n",
+                this.getCapacity(), this.getPrice(), statusLine);
+
+        System.out.println("   " + GRAY + this.getLocation() + RESET + " > " + this.getDescription());
+        System.out.println();
+
+        System.out.println(CYAN + "══════════════════════════════════════════════════════════════" + RESET);
+        }
 }

@@ -3,34 +3,38 @@ package models;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Transaction {
+import db.DatabaseObject;
 
-    private String transactionId;
+public class Transaction extends DatabaseObject{
+
     private String orderId;
-    private double amount;
+
+    private double foodAmount;
+    private double tableAmount;
+    private double discount;
     private String paymentMethod;
     private LocalDateTime transactionDate;
     private String status;
 
-    public Transaction(String transactionId, String orderId, double amount, String paymentMethod) {
-        setTransactionId(transactionId);
+    public Transaction(String orderId, double foodAmount,double tableAmount,double discount, String paymentMethod) {
         setOrderId(orderId);
-        setAmount(amount);
+
+        setFoodAmount(foodAmount);
+        setTableAmount(tableAmount);
+        setDiscount(discount);
+
         setPaymentMethod(paymentMethod);
         this.transactionDate = LocalDateTime.now();
         setStatus("Completed");
     }
 
-    public String getTransactionId() {
-        return transactionId;
-    }
 
     public String getOrderId() {
         return orderId;
     }
 
     public double getAmount() {
-        return amount;
+        return foodAmount;
     }
 
     public String getPaymentMethod() {
@@ -45,11 +49,9 @@ public class Transaction {
         return status;
     }
 
-    public void setTransactionId(String transactionId) {
-        if (transactionId == null || transactionId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Transaction ID cannot be empty");
-        }
-        this.transactionId = transactionId;
+    private double discountCalculator(){
+        double total = foodAmount + tableAmount;
+        return total - (total * discount) / 100;
     }
 
     public void setOrderId(String orderId) {
@@ -59,11 +61,24 @@ public class Transaction {
         this.orderId = orderId;
     }
 
-    public void setAmount(double amount) {
+    public void setFoodAmount(double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount must be greater than 0");
         }
-        this.amount = amount;
+        this.foodAmount = amount;
+    }
+    public void setTableAmount(double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Table charge must be positive");
+        }
+        this.tableAmount = amount;
+    }
+
+    public void setDiscount(double percent) {
+        if (percent < 0) {
+            throw new IllegalArgumentException("Table charge must be positive");
+        }
+        this.discount = percent;
     }
 
     public void setPaymentMethod(String paymentMethod) {
@@ -99,15 +114,65 @@ public class Transaction {
         return status.equalsIgnoreCase("Completed");
     }
 
-    public String getTransactionReceipt() {
-        return String.format("========== RECEIPT ==========\n" +
-                           "Transaction ID: %s\n" +
-                           "Order ID: %s\n" +
-                           "Amount: $%.2f\n" +
-                           "Payment Method: %s\n" +
-                           "Status: %s\n" +
-                           "Date: %s\n" +
-                           "=============================",
-            transactionId, orderId, amount, paymentMethod, status, getFormattedDate());
+    public void transactionInfo() {
+        String RESET  = "\u001B[0m";
+        String CYAN   = "\u001B[36m";
+        String GREEN  = "\u001B[32m";
+        String YELLOW = "\u001B[33m";
+        String BLUE   = "\u001B[34m";
+        String BOLD   = "\u001B[1m";
+        String GRAY   = "\u001B[90m";
+        String RED    = "\u001B[31m";
+
+        // Header
+        System.out.println(CYAN + BOLD + "═══════════════════════════════════════════════════════════════" + RESET);
+        System.out.println(CYAN + BOLD + "                  TRANSACTION SUMMARY" + RESET);
+        System.out.println(CYAN + "═══════════════════════════════════════════════════════════════" + RESET);
+
+        // ──────────────────────────────── Items ────────────────────────────────
+        System.out.printf(BLUE + " %-22s" + RESET + " : " + YELLOW + "$%8.2f" + RESET + "%n",
+                "Food Amount", foodAmount);
+
+        System.out.printf(BLUE + " %-22s" + RESET + " : " + YELLOW + "$%8.2f" + RESET + "%n",
+                "Table Amount", tableAmount);   // ← assuming you have tableAmount (was duplicate foodAmount)
+
+        double subtotal = foodAmount + tableAmount;   // corrected: was using foodAmount twice
+
+        System.out.println(GRAY + "───────────────────────────────────────────────────────────────" + RESET);
+
+        System.out.printf(BOLD + " %-22s" + RESET + " : " + GREEN + BOLD + "$%8.2f" + RESET + "%n",
+                "Sub-total", subtotal);
+
+        System.out.printf(" %-22s" + RESET + " : " + RED + "-$%7.2f" + RESET + "%n",
+                "Discount", (subtotal * discount) /100);
+
+        double finalTotal = this.discountCalculator();   // assuming this returns price after discount
+
+        System.out.println(GRAY + "───────────────────────────────────────────────────────────────" + RESET);
+
+        System.out.printf(BOLD + " %-22s" + RESET + " : " + GREEN + BOLD + "$%8.2f" + RESET + "%n",
+                "TOTAL TO PAY", finalTotal);
+
+        System.out.println(GRAY + "───────────────────────────────────────────────────────────────" + RESET);
+
+        // Payment & Status
+        String statusColor = switch (status.toLowerCase()) {
+            case "completed", "paid", "success" -> GREEN;
+            case "pending", "processing"        -> YELLOW;
+            case "failed", "cancelled"          -> RED;
+            default                             -> GRAY;
+        };
+
+        System.out.printf(BLUE + " %-22s" + RESET + " : %s%s%s%n",
+                "Payment Method", BOLD, paymentMethod, RESET);
+
+        System.out.printf(BLUE + " %-22s" + RESET + " : %s%n",
+                "Date", this.getFormattedDate());
+
+        System.out.printf(BLUE + " %-22s" + RESET + " : " + statusColor + BOLD + "%s" + RESET + "%n",
+                "Status", status);
+
+        System.out.println(CYAN + "═══════════════════════════════════════════════════════════════" + RESET);
     }
+
 }

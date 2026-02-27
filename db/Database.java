@@ -12,7 +12,6 @@ public class Database {
         storage.put(obj.getId(), obj);
     }
     
-    
     // READ (by ID)
     public DatabaseObject readById(String id) {
         DatabaseObject obj = storage.get(id);
@@ -22,6 +21,22 @@ public class Database {
         }
 
         return obj;
+    }
+
+    // READ (by ID) - generic overload that returns a specific subclass
+    public <T extends DatabaseObject> T readById(String id, Class<T> type) {
+        DatabaseObject obj = storage.get(id);
+
+        if (obj == null) {
+            return null;
+        }
+
+        if (!type.isInstance(obj)) {
+            System.out.println("Object found is not of type " + type.getSimpleName());
+            return null;
+        }
+
+        return type.cast(obj);
     }
     
     // UPDATE
@@ -34,7 +49,6 @@ public class Database {
 
         try {
             storage.put(id, updatedObj);
-            System.out.println(" Object updated successfully!");
         } catch (Exception e) {
             System.out.println(" Update failed: " + e.getMessage());
         }
