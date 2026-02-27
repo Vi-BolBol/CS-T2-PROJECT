@@ -1,0 +1,1 @@
+Week 4, we've implemented inheritance. Base class is DatabaseObject and subclass including our models. Doing this allow to easy manipulate data and store data in just one Database (Database simulate not actual Database), Lead to efficience, promot modularity and qualty code
