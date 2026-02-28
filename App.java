@@ -47,5 +47,7 @@ public class App {
 
         controller.orderFood();
 
+        controller.displayFood();
+
     }
 }

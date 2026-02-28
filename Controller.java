@@ -135,6 +135,11 @@ public class Controller{
     }
     
     private void updateFoodQuantity(Food food,int amount){
+        int newQuantity = food.getQuantity() - amount;
+        if(newQuantity < 0){
+            throw new IllegalArgumentException("Not enought food for sell!");
+        }
+        System.out.println(food.getQuantity() + amount + newQuantity + "hahh");
         food.setQuantity(food.getQuantity() - amount); // require to validate 
         food.syncAvilable();
 
@@ -152,16 +157,16 @@ public class Controller{
         Food order3 = sorted.get(2);
         Food order4 = sorted.get(3);
 
-        order.addItem(order1, 2, order1.getPrice());
-        order.addItem(order2, 1, order1.getPrice());
-        order.addItem(order3, 1, order1.getPrice());
-        order.addItem(order4, 1, order1.getPrice());
-
         //could lead to error, Need validation
-        updateFoodQuantity(order1, 2);
+        updateFoodQuantity(order1, 5);
         updateFoodQuantity(order2, 1);
         updateFoodQuantity(order3, 1);
         updateFoodQuantity(order4, 1);
+
+        order.addItem(order1, 5, order1.getPrice());
+        order.addItem(order2, 1, order1.getPrice());
+        order.addItem(order3, 1, order1.getPrice());
+        order.addItem(order4, 1, order1.getPrice());
 
         //order.setOrderType("Online"); // online order
 
