@@ -7,6 +7,11 @@ import models.Order;
 import models.Transaction;
 import models.Table;
 
+import models.payment.IPayment;
+import models.payment.CashPayment;
+import models.payment.QRPayment;
+import models.payment.CardPayment;
+import models.payment.OnlinePayment;
 
 import models.inventory.TransactionInventory;
 import models.inventory.CartInventory;
@@ -97,8 +102,17 @@ public class Controller{
         return cart.getCartSize();
     }
 
+    private IPayment resolvePayment(String paymentMethod) {
+        switch (paymentMethod.toUpperCase()) {
+            case "QR":     return new QRPayment();
+            case "CARD":   return new CardPayment("0000-0000-0000-0000");
+            case "ONLINE": return new OnlinePayment();
+            default:       return new CashPayment();
+        }
+    }
+
     //create one order, one order may contain many food, with diferent quantity 
-    public void order(String orderId, String orderType, String payment,String tableNumber){
+    public void order(String orderId, String orderType, String payment, String tableNumber){
 
         Order order = null;
         Table table = null;
@@ -148,7 +162,9 @@ public class Controller{
             System.out.println("└───────────────────────────────────────────────────┘");
         }
 
-        this.paymentIntegration(order.getOrderId(), totalPrice, payment, "completed");
+        IPayment paymentObj = resolvePayment(payment);
+        boolean success = paymentObj.pay(totalPrice);
+        this.paymentIntegration(order.getOrderId(), totalPrice, paymentObj.getPaymentType(), success ? "completed" : "FAILED");
 
         cart.clearCartItem();
     }
