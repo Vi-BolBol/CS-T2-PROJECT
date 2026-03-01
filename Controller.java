@@ -6,6 +6,11 @@ import models.Food;
 import models.Order;
 import models.Table;
 import models.Transaction;
+import models.payment.IPayment;
+import models.payment.CashPayment;
+import models.payment.QRPayment;
+import models.payment.CardPayment;
+import models.payment.OnlinePayment;
 
 public class Controller{
     private Database postgreSQL;
@@ -191,7 +196,10 @@ public class Controller{
 
         tablePickByUser.TableInfo();
 
-        Transaction transaction = new Transaction(order.getId(), order.getTotalAmount(), tablePickByUser.getPrice(), 20, "QR");
+        IPayment payment = new QRPayment();
+        payment.pay(order.getTotalAmount() + tablePickByUser.getPrice());
+
+        Transaction transaction = new Transaction(order.getId(), order.getTotalAmount(), tablePickByUser.getPrice(), 20, payment.getPaymentType());
         transaction.transactionInfo();
 
     }
