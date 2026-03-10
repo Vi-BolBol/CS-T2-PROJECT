@@ -191,9 +191,9 @@ public class Order extends DatabaseObject{
         // Header
         String orderType = isTableOrder() ? "Table " : "Online Order";
         sb.append(CYAN).append(BOLD)
-        .append("═══════════════════════════════════════════════════════\n")
+        .append("\n")
         .append(" ORDER SUMMARY ").append(orderType).append("\n")
-        .append("═══════════════════════════════════════════════════════\n").append(RESET);
+        .append("\n").append(RESET);
 
         // Items list
         if (foodItems.isEmpty()) {

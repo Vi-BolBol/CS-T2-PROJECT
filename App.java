@@ -57,5 +57,7 @@ public class App {
         //transaction history 
         //order history 
 
+        controller.managerLogin();
+
     }
 }
