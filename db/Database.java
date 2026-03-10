@@ -65,6 +65,12 @@ public class Database {
     }
     
     // FILTER BY TYPE
+
+    //<T extends DatabaseObject> : whatever T is, it must be a subclass of DatabaseObj
+    // Class<T> type: by passing type.class, you giving method the physical object that it can use to check type while the programming is running
+    // type.isInstance(obj): ask the JVM that is the obj actually the instance of type ?
+    // type.cast(obj): cast obj in T type
+    
     public <T extends DatabaseObject> List<T> filterByType(Class<T> type) {
         List<T> results = new ArrayList<>();
         
@@ -73,7 +79,6 @@ public class Database {
                 results.add(type.cast(obj));
             }
         }
-        
         return results;
     }
     

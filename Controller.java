@@ -9,9 +9,9 @@ import models.Transaction;
 
 public class Controller{
     private Database postgreSQL;
-
     Controller(){
         postgreSQL = new Database();
+
     }
 
     public void addFood(Food food){
@@ -83,7 +83,7 @@ public class Controller{
     System.out.printf(GRAY + "Total: %d tables" + RESET + "\n\n", tables.size());
 
     return tables;
-}
+    }
    
     public List<Food> displayFood() {
 
@@ -174,13 +174,13 @@ public class Controller{
         order.setOrderType("Table");  // Table order
         // for table order we need to connect that table to order, so that we know which table has occuper 
         
+
         Table tablePickByUser = sortedTable.get(2);
         tablePickByUser.setOccupied(true);
         postgreSQL.update(tablePickByUser.getId(), tablePickByUser);
 
         //connect dedicated table to order
         order.setTableId(tablePickByUser.getId());
-
 
         // when user Check out
         // display order info
@@ -190,7 +190,6 @@ public class Controller{
         System.out.println(order.getOrderSummary());
 
         tablePickByUser.TableInfo();
-
         Transaction transaction = new Transaction(order.getId(), order.getTotalAmount(), tablePickByUser.getPrice(), 20, "QR");
         transaction.transactionInfo();
 
@@ -198,10 +197,3 @@ public class Controller{
     
 }
 
-// transaction process 
-
-// total food price
-// total table price 
-// subtotal 
-// discount
-// total for pay

@@ -49,7 +49,7 @@ public class Transaction extends DatabaseObject{
         return status;
     }
 
-    private double discountCalculator(){
+    public double discountCalculator(){
         double total = foodAmount + tableAmount;
         return total - (total * discount) / 100;
     }

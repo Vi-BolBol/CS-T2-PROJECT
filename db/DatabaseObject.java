@@ -17,3 +17,4 @@ public class DatabaseObject {
 }
 
 // I was planning to use this component for Abstract, However I din't find any common subtract method for sub class
+

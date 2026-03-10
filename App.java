@@ -47,7 +47,15 @@ public class App {
 
         controller.orderFood();
 
-        controller.displayFood();
+        //Admin mode 
+        //revenue 
+        //all order 
+        //table ocupied 4/10
+
+        //food info
+        //table info 
+        //transaction history 
+        //order history 
 
     }
 }
