@@ -49,5 +49,7 @@ public class App {
 
         controller.displayFood();
 
+        controller.managerLogin();
+
     }
 }
